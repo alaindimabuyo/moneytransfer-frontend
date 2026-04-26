@@ -35,6 +35,9 @@ export interface TransferRequest {
   status: TransferStatus;
   submittedAt: string;
   recipientName: string | null;
+  recipientAccount: string | null;
+  recipientCountry: string | null;
+  recipientEmail: string | null;
   createdAt: string;
   updatedAt: string;
   quote?: Quote;

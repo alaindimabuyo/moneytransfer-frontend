@@ -2,12 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Theme tokens — exposed as CSS custom properties so components can use
+  `bg-surface`, `text-on_surface`, etc. via Tailwind without knowing about
+  light/dark. Adding `.dark` to <html> flips the palette.
+*/
 :root {
   color-scheme: light;
+
+  --color-surface: #f9f9ff;
+  --color-surface-dim: #d8dae2;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3fc;
+  --color-surface-container: #ecedf6;
+  --color-surface-container-high: #e6e7f0;
+  --color-surface-container-highest: #e1e2ea;
+
+  --color-on-surface: #191c21;
+  --color-on-surface-variant: #59413c;
+  --color-tertiary: #575d69;
+  --color-outline-variant: #e1bfb8;
+
+  --color-primary: #af2d19;
+  --color-primary-container: #d1462f;
+  --color-on-primary: #ffffff;
+
+  --color-secondary: #006b5b;
+  --color-secondary-container: #96f1da;
+
+  --color-error: #ba1a1a;
+
+  --shimmer-color: rgba(255, 255, 255, 0.55);
+}
+
+:root.dark {
+  color-scheme: dark;
+
+  --color-surface: #111317;
+  --color-surface-dim: #0d0f12;
+  --color-surface-container-lowest: #15181d;
+  --color-surface-container-low: #191c21;
+  --color-surface-container: #1f2228;
+  --color-surface-container-high: #25282f;
+  --color-surface-container-highest: #2c2f37;
+
+  --color-on-surface: #e9eaf0;
+  --color-on-surface-variant: #b0a39e;
+  --color-tertiary: #8e96a3;
+  --color-outline-variant: #4a3631;
+
+  --color-primary: #ff6a52;
+  --color-primary-container: #ff8771;
+  --color-on-primary: #1a0a06;
+
+  --color-secondary: #79d4c0;
+  --color-secondary-container: #003b32;
+
+  --color-error: #ff8a85;
+
+  --shimmer-color: rgba(255, 255, 255, 0.06);
 }
 
 html {
-  background-color: #f9f9ff;
+  background-color: var(--color-surface);
 }
 
 body {
@@ -25,8 +82,8 @@ button {
 
 /* Selection */
 ::selection {
-  background: #af2d19;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 /* Numerics: Work Sans tabular for money/rate display */
@@ -86,7 +143,7 @@ button {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.55) 50%,
+      var(--shimmer-color) 50%,
       transparent 100%
     );
     animation: shimmer 1.6s ease-in-out infinite;

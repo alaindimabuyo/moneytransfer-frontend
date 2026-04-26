@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser, useLogout } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function NavBar() {
   const { data: user } = useUser();
@@ -13,28 +14,19 @@ export function NavBar() {
   const path = usePathname();
 
   return (
-    <header className="sticky top-0 z-40">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 sm:px-10">
-        {/* Wordmark */}
-        <Link
-          href="/"
-          className="font-display text-title-lg font-bold tracking-tight text-on_surface"
-        >
-          Vellum
-        </Link>
-
-        {/* Right cluster: nav pill + identity pill */}
-        <div className="flex items-center gap-3">
-          {user ? (
-            <>
-              <nav className="flex items-center gap-1 rounded-2xl bg-surface-container-lowest/80 px-2 py-1 shadow-ambient backdrop-blur-glass">
-                <NavLink href="/quote" active={path?.startsWith("/quote")}>
-                  New transfer
-                </NavLink>
-                <NavLink href="/history" active={path?.startsWith("/history")}>
-                  History
-                </NavLink>
-              </nav>
+    <header className="sticky top-0 z-40 bg-surface/85 backdrop-blur-glass">
+      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-10 sm:py-4">
+        {/* Wordmark + (mobile only) compact identity row */}
+        <div className="flex items-center justify-between gap-3 sm:gap-4">
+          <Link
+            href="/"
+            className="font-display text-title-lg font-bold tracking-tight text-on_surface"
+          >
+            Vellum
+          </Link>
+          <div className="flex items-center gap-2 sm:hidden">
+            <ThemeToggle />
+            {user && (
               <UserMenu
                 email={user.email}
                 onLogout={() =>
@@ -43,16 +35,48 @@ export function NavBar() {
                   })
                 }
               />
+            )}
+          </div>
+        </div>
+
+        {/* Nav pill row */}
+        <div className="flex items-center gap-3 sm:gap-3">
+          {user ? (
+            <>
+              <nav className="flex flex-1 items-center gap-1 rounded-2xl bg-surface-container-lowest/80 px-2 py-1 shadow-ambient backdrop-blur-glass sm:flex-none">
+                <NavLink href="/quote" active={path?.startsWith("/quote")}>
+                  New transfer
+                </NavLink>
+                <NavLink href="/history" active={path?.startsWith("/history")}>
+                  History
+                </NavLink>
+              </nav>
+              <div className="hidden items-center gap-3 sm:flex">
+                <ThemeToggle />
+                <UserMenu
+                  email={user.email}
+                  onLogout={() =>
+                    logout.mutate(undefined, {
+                      onSuccess: () => router.push("/login"),
+                    })
+                  }
+                />
+              </div>
             </>
           ) : (
-            <nav className="flex items-center gap-1 rounded-2xl bg-surface-container-lowest/80 px-2 py-1 shadow-ambient backdrop-blur-glass">
-              <NavLink href="/login" active={path === "/login"}>
-                Log in
-              </NavLink>
-              <Link href="/signup" className="ml-1">
-                <Button variant="primary">Sign up</Button>
-              </Link>
-            </nav>
+            <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
+              <nav className="flex items-center gap-1 rounded-2xl bg-surface-container-lowest/80 px-2 py-1 shadow-ambient backdrop-blur-glass">
+                <NavLink href="/login" active={path === "/login"}>
+                  Log in
+                </NavLink>
+                <Link href="/signup" className="ml-1">
+                  <Button variant="primary">Sign up</Button>
+                </Link>
+              </nav>
+              <span className="hidden sm:block">
+                <ThemeToggle />
+              </span>
+            </div>
           )}
         </div>
       </div>
@@ -130,7 +154,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`rounded-xl px-3 py-2 font-display text-title-sm transition-colors ${
+      className={`flex-1 rounded-xl px-3 py-2 text-center font-display text-title-sm transition-colors sm:flex-none ${
         active
           ? "bg-surface-container text-on_surface"
           : "text-on_surface-variant hover:text-on_surface"

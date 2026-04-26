@@ -126,7 +126,7 @@ function TransfersList({
             className={i % 2 === 0 ? "bg-surface-container-lowest" : "bg-surface-container-low"}
           >
             <div className="flex items-center justify-between gap-4 p-5 pl-7">
-              <div>
+              <div className="min-w-0">
                 <p className="font-display text-title-md tabular text-on_surface">
                   {t.quote
                     ? `${fmt(t.quote.sourceAmount, t.quote.sourceCurrency)} → ${fmt(
@@ -135,6 +135,11 @@ function TransfersList({
                       )}`
                     : "Transfer"}
                 </p>
+                {t.recipientName && (
+                  <p className="mt-1 truncate font-body text-body-md text-on_surface">
+                    Sent to {t.recipientName}
+                  </p>
+                )}
                 <p className="mt-1 font-label text-label-sm uppercase tracking-[0.18em] text-on_surface-variant">
                   Submitted {new Date(t.submittedAt).toLocaleString()}
                 </p>

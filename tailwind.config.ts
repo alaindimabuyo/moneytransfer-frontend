@@ -1,42 +1,41 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        // Surface tiers (no-line rule depends on this)
+        // Surface tiers — drive light/dark via CSS variables in globals.css
         surface: {
-          DEFAULT: "#f9f9ff",
-          dim: "#d8dae2",
+          DEFAULT: "var(--color-surface)",
+          dim: "var(--color-surface-dim)",
           container: {
-            lowest: "#ffffff",
-            low: "#f2f3fc",
-            DEFAULT: "#ecedf6",
-            high: "#e6e7f0",
-            highest: "#e1e2ea",
+            lowest: "var(--color-surface-container-lowest)",
+            low: "var(--color-surface-container-low)",
+            DEFAULT: "var(--color-surface-container)",
+            high: "var(--color-surface-container-high)",
+            highest: "var(--color-surface-container-highest)",
           },
         },
         on_surface: {
-          DEFAULT: "#191c21",
-          variant: "#59413c",
+          DEFAULT: "var(--color-on-surface)",
+          variant: "var(--color-on-surface-variant)",
         },
-        // Brand
         primary: {
-          DEFAULT: "#af2d19",
-          container: "#d1462f",
+          DEFAULT: "var(--color-primary)",
+          container: "var(--color-primary-container)",
         },
-        on_primary: "#ffffff",
+        on_primary: "var(--color-on-primary)",
         secondary: {
-          DEFAULT: "#006b5b",
-          container: "#96f1da",
+          DEFAULT: "var(--color-secondary)",
+          container: "var(--color-secondary-container)",
         },
-        tertiary: "#575d69",
+        tertiary: "var(--color-tertiary)",
         outline: {
-          variant: "#e1bfb8",
+          variant: "var(--color-outline-variant)",
         },
-        // Semantic
-        error: "#ba1a1a",
+        error: "var(--color-error)",
       },
       fontFamily: {
         display: ["var(--font-display)", "ui-sans-serif", "system-ui"],
@@ -63,7 +62,7 @@ const config: Config = {
       },
       backgroundImage: {
         "gradient-cta":
-          "linear-gradient(135deg, #af2d19 0%, #d1462f 100%)",
+          "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%)",
       },
       boxShadow: {
         // Tinted on_surface, low opacity — DESIGN.MD ambient shadow rule

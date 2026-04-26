@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { useEffect, useState } from "react";
 
-const CURRENCIES = [
+export const CURRENCIES = [
   "USD",
   "EUR",
   "GBP",
@@ -16,19 +16,38 @@ const CURRENCIES = [
   "PHP",
 ];
 
-export interface QuoteFormProps {
-  onSubmit: (vars: {
-    sourceCurrency: string;
-    targetCurrency: string;
-    sourceAmount: number;
-  }) => void;
-  isPending?: boolean;
+export interface QuoteFormValues {
+  sourceCurrency: string;
+  targetCurrency: string;
+  sourceAmount: number;
 }
 
-export function QuoteForm({ onSubmit, isPending }: QuoteFormProps) {
-  const [sourceCurrency, setSourceCurrency] = useState("USD");
-  const [targetCurrency, setTargetCurrency] = useState("EUR");
+export interface QuoteFormProps {
+  onSubmit: (vars: QuoteFormValues) => void;
+  isPending?: boolean;
+  sourceCurrency: string;
+  targetCurrency: string;
+  onSourceCurrencyChange: (v: string) => void;
+  onTargetCurrencyChange: (v: string) => void;
+}
+
+export function QuoteForm({
+  onSubmit,
+  isPending,
+  sourceCurrency,
+  targetCurrency,
+  onSourceCurrencyChange,
+  onTargetCurrencyChange,
+}: QuoteFormProps) {
   const [amount, setAmount] = useState("1000");
+
+  // Keep target valid when source changes (e.g. via frequent-pair chip).
+  useEffect(() => {
+    if (sourceCurrency === targetCurrency) {
+      const next = CURRENCIES.find((c) => c !== sourceCurrency);
+      if (next) onTargetCurrencyChange(next);
+    }
+  }, [sourceCurrency, targetCurrency, onTargetCurrencyChange]);
 
   return (
     <form
@@ -43,10 +62,10 @@ export function QuoteForm({ onSubmit, isPending }: QuoteFormProps) {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-12">
         <div className="sm:col-span-5">
           <FieldLabel>You send</FieldLabel>
-          <div className="mt-1.5 flex items-stretch gap-2">
+          <div className="mt-1.5 flex flex-col gap-2 sm:flex-row sm:items-stretch">
             <Select
               value={sourceCurrency}
-              onChange={setSourceCurrency}
+              onChange={onSourceCurrencyChange}
               options={CURRENCIES}
             />
             <NumberInput value={amount} onChange={setAmount} />
@@ -65,7 +84,7 @@ export function QuoteForm({ onSubmit, isPending }: QuoteFormProps) {
           <div className="mt-1.5">
             <Select
               value={targetCurrency}
-              onChange={setTargetCurrency}
+              onChange={onTargetCurrencyChange}
               options={CURRENCIES.filter((c) => c !== sourceCurrency)}
             />
           </div>
@@ -105,7 +124,7 @@ function Select({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none rounded-xl bg-surface-container-highest px-4 py-3 pr-9 font-display text-title-md font-semibold text-on_surface outline-none focus:ring-2 focus:ring-primary/30"
+        className="block w-full appearance-none rounded-xl bg-surface-container-highest px-4 py-3 pr-9 font-display text-title-md font-semibold text-on_surface outline-none focus:ring-2 focus:ring-primary/30 sm:w-auto"
       >
         {options.map((o) => (
           <option key={o} value={o}>

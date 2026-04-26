@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { Quote } from "@/types/api";
 import { Button } from "@/components/ui/Button";
 import {
@@ -23,18 +24,32 @@ function fmtRate(rate: string) {
   return n >= 1 ? n.toFixed(4) : n.toPrecision(4);
 }
 
+export interface QuoteCardProps {
+  quote: Quote;
+  onSubmit?: () => void;
+  submitting?: boolean;
+  onRefresh?: () => void;
+  refreshing?: boolean;
+  cacheStatus?: "hit" | "miss" | "stale_fallback";
+}
+
 export function QuoteCard({
   quote,
   onSubmit,
   submitting,
-  cacheStatus,
-}: {
-  quote: Quote;
-  onSubmit?: () => void;
-  submitting?: boolean;
-  cacheStatus?: "hit" | "miss" | "stale_fallback";
-}) {
-  const expiresInMs = new Date(quote.expiresAt).getTime() - Date.now();
+  onRefresh,
+  refreshing,
+}: QuoteCardProps) {
+  const [now, setNow] = useState<number>(() => Date.now());
+
+  // Live tick once per second so the countdown updates and the card
+  // can flip to "Expired" the moment expires_at passes.
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const expiresInMs = new Date(quote.expiresAt).getTime() - now;
   const expired = quote.status === "expired" || expiresInMs <= 0;
   const tone = expired ? "neutral" : statusToTone(quote.status);
 
@@ -46,7 +61,9 @@ export function QuoteCard({
             <p className="font-label text-label-sm uppercase tracking-[0.22em] text-on_surface-variant">
               Your quote
             </p>
-            <StatusWord status={friendlyStatus(quote.status)} />
+            <StatusWord
+              status={expired ? "Expired" : friendlyStatus(quote.status)}
+            />
           </div>
           <p className="mt-3 font-display text-display-md font-bold tabular text-on_surface">
             {fmtMoney(quote.targetAmount, quote.targetCurrency)}
@@ -75,14 +92,25 @@ export function QuoteCard({
       <div className="flex flex-wrap items-center justify-between gap-4 px-7 pb-7 pl-9 sm:px-9 sm:pl-12">
         <p className="font-body text-body-md text-on_surface-variant">
           {expired
-            ? "This quote has expired — start a new one above."
+            ? "This quote has expired. Refresh to get the latest rate."
             : `This rate is locked for ${formatExpiry(expiresInMs)}.`}
         </p>
-        {onSubmit && quote.status === "active" && !expired && (
-          <Button onClick={onSubmit} disabled={submitting}>
-            {submitting ? "Sending…" : "Send transfer"}
-          </Button>
-        )}
+        {expired
+          ? onRefresh && (
+              <Button
+                variant="secondary"
+                onClick={onRefresh}
+                disabled={refreshing}
+              >
+                {refreshing ? "Refreshing…" : "Refresh quote"}
+              </Button>
+            )
+          : onSubmit &&
+            quote.status === "active" && (
+              <Button onClick={onSubmit} disabled={submitting}>
+                {submitting ? "Sending…" : "Send transfer"}
+              </Button>
+            )}
       </div>
     </StatusRibbon>
   );
