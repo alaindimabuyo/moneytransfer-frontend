@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  background-color: #f9f9ff;
+}
+
+body {
+  @apply bg-surface text-on_surface font-body antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* No-line rule: kill default form/control borders globally; components opt back in via background tonality. */
+input,
+select,
+textarea,
+button {
+  border: 0;
+}
+
+/* Selection */
+::selection {
+  background: #af2d19;
+  color: #ffffff;
+}
+
+/* Numerics: Work Sans tabular for money/rate display */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tertiary action: pure text in primary, 2px underline only on hover.
+   Uses text-decoration so the line hugs the glyphs instead of the
+   full container width (per DESIGN.MD §5 "Tertiary"). */
+@layer components {
+  .btn-tertiary {
+    @apply text-primary;
+    text-decoration: underline solid transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    transition: text-decoration-color 150ms ease-out;
+  }
+  .btn-tertiary:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* Loading animations — opacity-only "breathe" for the brand mark and a
+   left-to-right shimmer for skeleton placeholders. Both stay within the
+   no-line / no-spinner constraints in DESIGN.MD §4. */
+@keyframes vellum-breathe {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@layer components {
+  .loader-breathe {
+    animation: vellum-breathe 1.2s ease-in-out infinite alternate;
+  }
+  .loader-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .loader-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.55) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+}
