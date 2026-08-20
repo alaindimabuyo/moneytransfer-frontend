@@ -30,7 +30,6 @@ yarn-debug.log*
 pnpm-debug.log*
 
 # Editors / OS
-.vscode/
 .idea/
 .DS_Store
 *.swp
